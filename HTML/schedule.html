@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediAssist Schedule</title>
+    <link rel="stylesheet" href="../CSS/schedule.css">
+    <link rel="stylesheet" href="../CSS/dark-mode.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="../JS/dark-mode.js" defer></script>
+    <script src="../JS/theme.js"></script>
+    <script src="../JS/add-dark-mode-toggle.js" defer></script>
+</head>
+
+<body>
+    <header>
+        <a href="dashboard.html" class="logo">⚕️MediAssist</a>
+        <nav>
+            <span id="user-greeting">Welcome!</span>
+            <img id="profile-picture" alt="Profile Picture"
+                style="width:38px;height:38px;border-radius:50%;object-fit:cover;margin-left:10px;vertical-align:middle;display:none;">
+            <a href="profile.html"><i class="fas fa-user"></i> Profile</a>
+            <a href="../process/logout_process.php"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            <!-- Add dark mode toggle button -->
+            <button id="dark-mode-toggle" aria-label="Toggle dark mode">
+                <i class="fas fa-sun"></i>
+            </button>
+        </nav>
+        <!-- Example notification bell icon -->
+        <div id="notifications-icon" style="position: relative; margin-left: 24px; cursor: pointer;">
+            <i class="fas fa-bell" style="font-size: 2.2rem; color: #ff9800;"></i>
+            <span id="notifications-dot"
+                style="display: none; background: #e53935; border-radius: 50%; width: 14px; height: 14px; position: absolute; top: 0; right: 0; border: 2px solid #fff;"></span>
+        </div>
+    </header>
+
+    
+
+    <div class="container">
+        <h1>MediAssist Schedule</h1>
+        <div id="calendar"></div>
+    </div>
+    <script>
+        // Helper: Get days in month
+        function daysInMonth(year, month) {
+            return new Date(year, month + 1, 0).getDate();
+        }
+        // Helper: Get weekday of first day (0=Sun)
+        function firstDayOfWeek(year, month) {
+            return new Date(year, month, 1).getDay();
+        }
+        // Helper: Format date as YYYY-MM-DD
+        function formatDate(y, m, d) {
+            return y + '-' + String(m + 1).padStart(2, '0') + '-' + String(d).padStart(2, '0');
+        }
+
+        // Main calendar render
+        function renderCalendar(year, month, events) {
+            const calendar = document.getElementById('calendar');
+            calendar.innerHTML = '';
+
+            // Header
+            const header = document.createElement('div');
+            header.className = 'calendar-header';
+            const monthNames = [
+                'January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December'
+            ];
+            header.innerHTML = `
+                <button class="calendar-nav" id="prev-month" aria-label="Previous Month">←</button>
+                <span>${monthNames[month]} ${year}</span>
+                <button class="calendar-nav" id="next-month" aria-label="Next Month">→</button>
+            `;
+            calendar.appendChild(header);
+
+            // Days of week
+            const daysRow = document.createElement('div');
+            daysRow.className = 'calendar-grid';
+            daysRow.style.gridAutoRows = '30px';
+            ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].forEach(day => {
+                const cell = document.createElement('div');
+                cell.style.fontWeight = 'bold';
+                cell.style.textAlign = 'center';
+                cell.style.background = '#e3e3e3';
+                cell.textContent = day;
+                daysRow.appendChild(cell);
+            });
+            calendar.appendChild(daysRow);
+
+            // Calendar grid
+            const grid = document.createElement('div');
+            grid.className = 'calendar-grid';
+
+            const days = daysInMonth(year, month);
+            const firstDay = firstDayOfWeek(year, month);
+            const today = new Date();
+            let cellCount = 0;
+
+            // Fill empty cells before first day
+            for (let i = 0; i < firstDay; i++) {
+                grid.appendChild(document.createElement('div'));
+                cellCount++;
+            }
+
+            // Fill days
+            for (let d = 1; d <= days; d++) {
+                const cell = document.createElement('div');
+                cell.className = 'calendar-day';
+                const cellDate = formatDate(year, month, d);
+                if (
+                    year === today.getFullYear() &&
+                    month === today.getMonth() &&
+                    d === today.getDate()
+                ) {
+                    cell.classList.add('today');
+                }
+                cell.innerHTML = `<span class="date-num">${d}</span>`;
+
+                // Add events for this day
+                (events[cellDate] || []).forEach(ev => {
+                    const evDiv = document.createElement('div');
+                    evDiv.className = 'event ' + ev.type;
+                    // Changed emojis for appointments and medications
+                    evDiv.textContent = (ev.type === 'appointment' ? '🏥 ' : '💊 ') + ev.title;
+                    evDiv.onclick = function (e) {
+                        e.stopPropagation();
+                        showPopup(ev);
+                    };
+                    cell.appendChild(evDiv);
+                });
+
+                grid.appendChild(cell);
+                cellCount++;
+            }
+            // Fill empty cells at end
+            while (cellCount % 7 !== 0) {
+                grid.appendChild(document.createElement('div'));
+                cellCount++;
+            }
+            calendar.appendChild(grid);
+
+            // Month navigation
+            document.getElementById('prev-month').onclick = () => {
+                const prev = new Date(year, month - 1, 1);
+                renderCalendar(prev.getFullYear(), prev.getMonth(), events);
+            };
+            document.getElementById('next-month').onclick = () => {
+                const next = new Date(year, month + 1, 1);
+                renderCalendar(next.getFullYear(), next.getMonth(), events);
+            };
+        }
+
+        // Show popup with event details
+        function showPopup(ev) {
+            const popup = document.createElement('div');
+            popup.className = 'popup';
+            
+            // Use different emojis based on event type
+            const eventEmoji = ev.type === 'appointment' ? '🏥' : '💊';
+            
+            popup.innerHTML = `
+                <b>${eventEmoji} ${ev.title}</b><br>
+                <b>Type:</b> ${ev.type === 'appointment' ? 'Appointment' : 'Medication'}<br>
+                ${ev.time ? `<b>Time:</b> ${ev.time}<br>` : ''}
+                ${ev.location ? `<b>Location:</b> ${ev.location}<br>` : ''}
+                ${ev.dosage ? `<b>Dosage:</b> ${ev.dosage}<br>` : ''}
+                ${ev.frequency ? `<b>Frequency:</b> ${ev.frequency}<br>` : ''}
+                ${ev.notes ? `<b>Notes:</b> ${ev.notes}<br>` : ''}
+                <span class="popup-close">Click to close</span>
+            `;
+            popup.onclick = () => document.body.removeChild(popup);
+            document.body.appendChild(popup);
+        }
+
+        // Load events from PHP
+        function loadEventsAndRender(year, month) {
+            fetch('../process/schedule_process.php')
+                .then(r => r.json())
+                .then(data => {
+                    // Map events by date
+                    const eventsByDate = {};
+                    if (data.success && Array.isArray(data.events)) {
+                        data.events.forEach(ev => {
+                            let date = '';
+                            let type = '';
+                            let title = '';
+                            let time = '';
+                            let location = '';
+                            let dosage = '';
+                            let frequency = '';
+                            let notes = '';
+                            // Ensure ev.start exists and is a string
+                            if (ev.start && typeof ev.start === 'string') {
+                                date = ev.start.split('T')[0];
+                                time = ev.start.split('T')[1] || '';
+                            }
+                            if (ev.className === 'event-appointment') {
+                                type = 'appointment';
+                                title = ev.title;
+                                location = ev.extendedProps.location || '';
+                                notes = ev.extendedProps.notes || '';
+                            } else if (ev.className === 'event-medication') {
+                                type = 'medication';
+                                title = ev.title;
+                                dosage = ev.extendedProps.dosage || '';
+                                frequency = ev.extendedProps.frequency || '';
+                                notes = ev.extendedProps.notes || '';
+                            }
+                            if (date) {
+                                if (!eventsByDate[date]) eventsByDate[date] = [];
+                                eventsByDate[date].push({
+                                    type, title, time, location, dosage, frequency, notes
+                                });
+                            }
+                        });
+                    }
+                    renderCalendar(year, month, eventsByDate);
+                })
+                .catch(() => {
+                    renderCalendar(year, month, {});
+                });
+        }
+
+        // Initial render
+        document.addEventListener('DOMContentLoaded', function () {
+            const today = new Date();
+            loadEventsAndRender(today.getFullYear(), today.getMonth());
+        });
+    </script>
+    <script src="../JS/script.js"></script>
+</body>
+
+</html>

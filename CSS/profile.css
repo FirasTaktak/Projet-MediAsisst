@@ -1,0 +1,299 @@
+:root {
+            --primary-color: #4a6fd4;
+            --primary-dark: #3b5bbd;
+            --bg-primary: #ffffff;
+            --bg-secondary: #ffffff;
+            --text-primary: #333333;
+            --text-secondary: #666666;
+            --border-color: #d1d5db;
+            --border-radius-sm: 4px;
+            --border-radius-md: 6px;
+            --border-radius-lg: 12px;
+            --spacing-sm: 0.5rem;
+            --spacing-md: 0.75rem;
+            --spacing-lg: 1rem;
+            --spacing-xl: 1.5rem;
+            --font-size-base: 1rem;
+            --font-family: 'Segoe UI', system-ui, sans-serif;
+            --shadow-lg: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+            --transition-speed: 0.2s;
+        }
+        
+        body {
+            position: relative;
+            font-family: var(--font-family);
+            margin: 0;
+            padding: 0;
+            color: var(--text-primary);
+            background-color: #f9fafb;
+        }
+        
+        /* Profile container with improved shadows and spacing */
+        .profile-completion {
+            background-color: var(--bg-secondary);
+            border-radius: var(--border-radius-lg);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+            padding: var(--spacing-xl);
+            margin: 4% auto;
+            max-width: 90%;
+            width: 1200px;
+        }
+        
+        /* Page header styling */
+        .profile-completion h1 {
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+            font-weight: 600;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 0.75rem;
+            text-align: center;
+        }
+        
+        .profile-completion p {
+            margin-bottom: 2rem;
+            color: var(--text-secondary);
+            text-align: center;
+        }
+        
+        /* Profile Form Layout - Horizontal arrangement */
+        #profileForm {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--spacing-lg);
+        }
+        
+        /* Form groups in 3-column layout with proper spacing */
+        #profileForm .form-group {
+            flex: 1 0 calc(33.333% - var(--spacing-lg));
+            min-width: 250px;
+            margin-bottom: var(--spacing-xl);
+            position: relative;
+        }
+        
+        /* Form input styling */
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: var(--font-size-base);
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(74, 111, 212, 0.2);
+        }
+        
+        /* Label styling */
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+        
+        /* Fix for the address textarea */
+        .form-group textarea#address {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        /* Edit buttons - Position below the input fields with proper spacing */
+        #edit-first-name,
+        #edit-last-name {
+            position: absolute;
+            left: 0;           /* Align with the left edge of the input */
+            top: calc(100% + 5px); /* Position below the input with 5px spacing */
+            padding: 0.3rem 0.6rem;
+            font-size: 0.8rem;
+            background-color: white;
+            color: var(--primary-color);  /* Blue text color */
+            border: 1px solid var(--primary-color);
+            border-radius: 20px;
+            cursor: pointer;
+            z-index: 2;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            transition: all 0.2s ease;
+        }
+        
+        /* Add hover effect - white text on blue background */
+        #edit-first-name:hover,
+        #edit-last-name:hover {
+            background-color: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);  /* Slight lift effect on hover */
+        }
+        
+        /* Ensure inputs take full width of their container */
+        .form-group input,
+        .form-group select {
+            width: 100%;
+        }
+        
+        /* Fix for gender radio buttons with improved spacing */
+        .radio-group {
+            display: flex;
+            gap: var(--spacing-lg);
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            background-color: var(--bg-primary);
+        }
+        
+        .radio-group label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            margin-bottom: 0;
+            font-weight: normal;
+        }
+        
+        .radio-group input[type="radio"] {
+            margin-right: var(--spacing-sm);
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary-color);
+        }
+        
+        /* Fix for blood type select box */
+        #blood_group {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            font-size: var(--font-size-base);
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%234a6fd4' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            cursor: pointer;
+        }
+        
+        /* Profile picture styling */
+        .image-upload-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: var(--spacing-md);
+            border: 1px dashed #d1d5db;
+            border-radius: 6px;
+            background-color: rgba(0, 0, 0, 0.02);
+        }
+        
+        #imagePreview {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid var(--primary-color);
+            margin-bottom: var(--spacing-md);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Section divider */
+        .section-divider {
+            width: 100%;
+            border-top: 1px solid #e5e7eb;
+            margin: 1.5rem 0;
+        }
+        
+        /* Fix the optional fields section to maintain horizontal layout */
+        .optional-fields {
+            width: 100%;
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--spacing-lg);
+            margin-top: var(--spacing-xl);
+            padding-top: var(--spacing-lg);
+            border-top: 1px solid var(--border-color);
+        }
+        
+        .optional-fields .form-group {
+            flex: 1 0 calc(33.333% - var(--spacing-lg));
+            min-width: 250px;
+        }
+        
+        /* Address field should take full width */
+        .form-group:has(textarea) {
+            flex-basis: 100%;
+            margin-top: var(--spacing-md);
+        }
+        
+        /* Form actions with more spacing */
+        .form-actions {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            margin-top: var(--spacing-xl);
+            padding-top: var(--spacing-lg);
+        }
+        
+        .form-actions button {
+            min-width: 180px;
+            padding: 0.75rem 1.5rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            border-radius: 8px;
+        }
+        
+        .form-actions .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+        }
+        
+        .form-actions .btn-primary:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(74, 111, 212, 0.2);
+        }
+        
+        .form-actions .btn-outline {
+            background-color: transparent;
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+        }
+        
+        .form-actions .btn-outline:hover {
+            background-color: rgba(74, 111, 212, 0.1);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(74, 111, 212, 0.1);
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .profile-completion {
+                max-width: 95%;
+                padding: var(--spacing-lg);
+            }
+            
+            #profileForm .form-group,
+            .optional-fields .form-group {
+                flex: 1 0 100%;
+            }
+            
+            #edit-first-name,
+            #edit-last-name {
+                position: relative;
+                top: 5px;
+                left: 0;
+                margin-bottom: var(--spacing-md);
+            }
+            
+            .form-actions {
+                flex-direction: column;
+                gap: var(--spacing-md);
+            }
+            
+            .form-actions button {
+                width: 100%;
+            }
+        }

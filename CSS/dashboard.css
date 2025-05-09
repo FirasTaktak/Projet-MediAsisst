@@ -1,0 +1,431 @@
+/* Dashboard Minimalistic Style */
+:root {
+  --primary-color: #4285f4;
+  --secondary-color: #ff9800;
+  --text-color: #333;
+  --light-gray: #f5f5f5;
+  --medium-gray: #e0e0e0;
+  --white: #fff;
+  --shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  --border-radius: 8px;
+  --transition: all 0.3s ease;
+}
+
+/* Add this to ensure all elements transition smoothly */
+* {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Add dark mode variables */
+.dark-mode {
+  --primary-color: #5c9aff;
+  --secondary-color: #ffb74d;
+  --text-color: #f5f5f5;
+  --light-gray: #222;
+  --medium-gray: #444;
+  --white: #333;
+  --shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Add specific dark mode styles for elements that might not inherit from variables */
+.dark-mode .summary-info p,
+.dark-mode .dashboard-item p {
+  color: #aaa;
+}
+
+.dark-mode footer {
+  color: #aaa;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  line-height: 1.6;
+  color: var(--text-color);
+  background-color: var(--light-gray);
+  margin: 0;
+  padding: 0;
+  transition: var(--transition);
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+/* Header styling */
+header {
+  background-color: var(--white);
+  box-shadow: var(--shadow);
+  padding: 1rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--primary-color);
+  text-decoration: none;
+}
+
+nav {
+  display: flex;
+  align-items: center;
+}
+
+nav a, #user-greeting {
+  margin-left: 1.5rem;
+  text-decoration: none;
+  color: var(--text-color);
+  font-weight: 500;
+  transition: var(--transition);
+}
+
+nav a:hover {
+  color: var(--primary-color);
+}
+
+#dark-mode-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-left: 1.5rem;
+  font-size: 1.2rem;
+  color: var(--text-color);
+  transition: var(--transition);
+}
+
+#dark-mode-toggle:hover {
+  color: var(--primary-color);
+}
+
+/* Dashboard summary cards */
+.dashboard-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin: 2rem 0;
+}
+
+.summary-card {
+  background-color: var(--white);
+  border-radius: var(--border-radius);
+  padding: 1.5rem;
+  box-shadow: var(--shadow);
+  display: flex;
+  align-items: center;
+  transition: var(--transition);
+}
+
+.summary-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.summary-icon {
+  background-color: rgba(66, 133, 244, 0.1);
+  color: var(--primary-color);
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 1rem;
+  font-size: 1.5rem;
+}
+
+.summary-info h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.summary-info p {
+  margin: 0.5rem 0 0;
+  color: #666;
+}
+
+/* Dashboard grid items */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin: 2rem 0;
+}
+
+.dashboard-item {
+  background-color: var(--white);
+  border-radius: var(--border-radius);
+  padding: 1.5rem;
+  box-shadow: var(--shadow);
+  text-decoration: none;
+  color: var(--text-color);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: var(--transition);
+}
+
+.dashboard-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.dashboard-item i {
+  font-size: 2rem;
+  color: var(--primary-color);
+  margin-bottom: 1rem;
+}
+
+.dashboard-item span {
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+.dashboard-item p {
+  margin: 0;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+/* Dashboard sections */
+.dashboard-sections {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin: 2rem 0;
+}
+
+.dashboard-section {
+  background-color: var(--white);
+  border-radius: var(--border-radius);
+  padding: 1.5rem;
+  box-shadow: var(--shadow);
+}
+
+.dashboard-section h2 {
+  margin-top: 0;
+  font-size: 1.2rem;
+  color: var(--primary-color);
+  border-bottom: 1px solid var(--medium-gray);
+  padding-bottom: 0.5rem;
+}
+
+/* Schedule and appointments lists */
+.schedule-list, .appointments-preview {
+  margin-top: 1rem;
+}
+
+/* Alert styling */
+.alert {
+  padding: 1rem;
+  border-radius: var(--border-radius);
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+}
+
+.alert-warning {
+  background-color: rgba(255, 152, 0, 0.1);
+  border-left: 4px solid var(--secondary-color);
+}
+
+.alert i {
+  margin-right: 0.5rem;
+  color: var(--secondary-color);
+}
+
+.alert a {
+  color: var(--primary-color);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+/* Notification styling */
+.notification-dropdown {
+  position: absolute;
+  top: 60px;
+  right: 20px;
+  width: 320px;
+  background-color: var(--white);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  z-index: 1000;
+  display: none;
+  overflow: hidden;
+}
+
+.dropdown-header {
+  padding: 1rem;
+  border-bottom: 1px solid var(--medium-gray);
+  font-weight: 600;
+}
+
+.notification-list {
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+#notification-bar {
+  background-color: var(--white);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  border-left: 4px solid var(--primary-color);
+}
+
+/* Loading screen */
+#loading-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--white);
+  z-index: 9999;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Footer */
+footer {
+  text-align: center;
+  padding: 1.5rem;
+  margin-top: 2rem;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+  
+  header {
+    flex-direction: column;
+    padding: 1rem;
+  }
+  
+  nav {
+    margin-top: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  
+  nav a, #user-greeting {
+    margin: 0.5rem;
+  }
+  
+  .dashboard-summary,
+  .dashboard-grid,
+  .dashboard-sections {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Appointment styling */
+.appointment-item {
+    display: flex;
+    margin-bottom: 15px;
+    padding: 10px;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.appointment-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+}
+
+/* Today's appointments styling */
+.today-appointment {
+    border-left: 4px solid var(--primary-color);
+    background-color: rgba(66, 133, 244, 0.05);
+}
+
+/* Upcoming appointments styling */
+.upcoming-appointment {
+    border-left: 4px solid var(--secondary-color);
+}
+
+.appointment-date {
+    min-width: 120px;
+    font-weight: bold;
+    color: var(--primary-color);
+    padding-right: 10px;
+}
+
+.appointment-details {
+    flex: 1;
+}
+
+.appointment-details h4 {
+    margin: 0 0 5px 0;
+    font-size: 16px;
+}
+
+.appointment-details p {
+    margin: 0;
+    color: #666;
+    font-size: 14px;
+}
+
+.appointment-actions {
+    display: flex;
+    margin-top: 8px;
+}
+
+.appointment-actions button {
+    background: none;
+    border: none;
+    color: var(--primary-color);
+    cursor: pointer;
+    margin-right: 10px;
+    font-size: 0.9rem;
+    padding: 2px 5px;
+    border-radius: 4px;
+}
+
+.appointment-actions button:hover {
+    background-color: rgba(66, 133, 244, 0.1);
+}
+
+.loading-spinner {
+    text-align: center;
+    padding: 20px;
+    color: #666;
+}
+
+/* Dark mode support */
+.dark-mode .appointment-item {
+    background-color: #2a2a2a;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+
+.dark-mode .today-appointment {
+    background-color: rgba(92, 154, 255, 0.1);
+}
+
+.dark-mode .appointment-details p {
+    color: #aaa;
+}
+
+.dark-mode .appointment-actions button:hover {
+    background-color: rgba(92, 154, 255, 0.2);
+}
+
+/* No appointments message */
+.no-appointments {
+    text-align: center;
+    padding: 20px;
+    color: #888;
+    font-style: italic;
+}

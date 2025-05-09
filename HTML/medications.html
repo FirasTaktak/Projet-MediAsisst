@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medications - MediAssist</title>
+    <link rel="stylesheet" href="../CSS/style.css">
+    <link rel="stylesheet" href="../CSS/prescriptions.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="../JS/dark-mode.js" defer></script>
+    <script src="../JS/theme.js"></script>
+    <script src="../JS/add-dark-mode-toggle.js" defer></script>
+</head>
+
+<body id="medications-page-identifier">
+
+
+    <header>
+        <a href="dashboard.html" class="logo">MediAssist</a>
+        <nav>
+            <span id="user-greeting">Welcome!</span>
+            <img id="profile-picture" alt="Profile Picture"
+                style="width:38px;height:38px;border-radius:50%;object-fit:cover;margin-left:10px;vertical-align:middle;display:none;">
+            <a href="profile.html"><i class="fas fa-user"></i> Profile</a>
+            <a href="../process/logout_process.php"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            <!-- Add dark mode toggle button -->
+            <button id="dark-mode-toggle" aria-label="Toggle dark mode">
+                <i class="fas fa-sun"></i>
+            </button>
+        </nav>
+        <!-- Example notification bell icon -->
+        <div id="notifications-icon" style="position: relative; margin-left: 24px; cursor: pointer;">
+            <i class="fas fa-bell" style="font-size: 2.2rem; color: #ff9800;"></i>
+            <span id="notifications-dot"
+                style="display: none; background: #e53935; border-radius: 50%; width: 14px; height: 14px; position: absolute; top: 0; right: 0; border: 2px solid #fff;"></span>
+        </div>
+    </header>
+
+
+    <div class="container">
+        <div class="content-header">
+            <h1>My Medications</h1>
+            <button id="add-med-btn" class="btn-primary"><i class="fas fa-plus"></i> Add Medication</button>
+        </div>
+
+        <!-- Medication Form -->
+        <div id="med-form-container" class="form-container" style="display: none;">
+            <div id="med-success-msg" class="alert alert-success" style="display:none;"></div>
+            <h2 id="form-title">Add New Medication</h2>
+            <form id="medication-form" action="../process/medications_process.php" method="post"
+                enctype="multipart/form-data" class="ajax-form">
+                <input type="hidden" id="med_id" name="med_id">
+                <input type="hidden" name="action" id="form_action" value="add">
+                <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
+                <div class="form-group">
+                    <label for="med_name">Medication Name</label>
+                    <input type="text" id="med_name" name="med_name" required>
+                </div>
+                <div class="form-group">
+                    <label for="dosage">Dosage</label>
+                    <input type="text" id="dosage" name="dosage" required>
+                </div>
+                <div class="form-group">
+                    <label for="frequency_number">Frequency</label>
+                    <div style="display: flex; gap: 10px;">
+                        <select id="frequency_number" name="frequency_number" required>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                        </select>
+                        <select id="frequency_period" name="frequency_period" required>
+                            <option value="daily">Daily</option>
+                            <option value="weekly">Weekly</option>
+                            <option value="monthly">Monthly</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="start_date">Start Date</label>
+                    <input type="date" id="start_date" name="start_date" required>
+                </div>
+                <div class="form-group">
+                    <label for="end_date">End Date</label>
+                    <input type="date" id="end_date" name="end_date">
+                </div>
+                <div class="form-group">
+                    <label for="time_of_day">Time of Day</label>
+                    <input type="time" id="time_of_day" name="time_of_day" required>
+                </div>
+                <div class="form-group">
+                    <label for="med_image">Medication Image</label>
+                    <input type="file" id="med_image" name="med_image" accept="image/*">
+                    <div id="current-image-container" style="display:none;">
+                        <p>Current image:</p>
+                        <img id="current-image" src="" alt="Current medication image">
+                        <div style="margin-top: 10px;">
+                            <label>
+                                <input type="checkbox" id="replace_image" name="replace_image" value="1">
+                                Replace this image
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                <div id="form-error" class="alert alert-danger" style="display: none;"></div>
+                <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+                    <button type="button" id="cancel-med-btn" class="btn" style="background-color: #aaa;">Cancel</button>
+                    <button type="submit" class="btn">Save Medication</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Loading indicator -->
+        <div id="loading-medications" class="loading-spinner">
+            <i class="fas fa-spinner fa-spin fa-2x"></i>
+            <p>Loading medications...</p>
+        </div>
+
+        <!-- No medications message -->
+        <div id="no-medications-message" class="no-data-message" style="display:none;">
+            <i class="fas fa-pills fa-3x" style="margin-bottom: 15px;"></i>
+            <h3>No Medications Found</h3>
+            <p>You haven't added any medications yet. Click the "Add Medication" button to get started.</p>
+        </div>
+
+        <!-- Medications grid -->
+        <div id="medications-grid" class="medications-grid">
+            <!-- Medication cards will be dynamically inserted here -->
+        </div>
+
+        <!-- Medication Detail Modal -->
+        <div id="medication-modal" class="modal">
+            <div class="modal-content">
+                <span class="close-modal">&times;</span>
+                <h2 id="modal-title">Medication Details</h2>
+                <div class="modal-medication-details">
+                    <div class="modal-medication-image">
+                        <img id="modal-image" src="" alt="Medication Image">
+                    </div>
+                    <div class="modal-medication-info">
+                        <p><strong>Name:</strong> <span id="modal-name"></span></p>
+                        <p><strong>Dosage:</strong> <span id="modal-dosage"></span></p>
+                        <p><strong>Frequency:</strong> <span id="modal-frequency"></span></p>
+                        <p><strong>Time of Day:</strong> <span id="modal-time"></span></p>
+                        <p><strong>Start Date:</strong> <span id="modal-start-date"></span></p>
+                        <p><strong>End Date:</strong> <span id="modal-end-date"></span></p>
+                    </div>
+                    <div class="modal-actions">
+                        <button id="edit-medication-btn" class="btn-edit"><i class="fas fa-edit"></i> Edit</button>
+                        <button id="delete-medication-btn" class="btn-delete"><i class="fas fa-trash"></i> Delete</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Delete Confirmation Modal -->
+        <div id="delete-modal" class="modal">
+            <div class="modal-content" style="max-width: 500px;">
+                <span class="close-delete-modal" style="position: absolute; right: 20px; top: 15px; color: #aaa; font-size: 28px; font-weight: bold; cursor: pointer;">&times;</span>
+                <h2>Confirm Deletion</h2>
+                <p>Are you sure you want to delete this medication? This action cannot be undone.</p>
+                <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+                    <button id="cancel-delete-btn" class="btn" style="background-color: #aaa;">Cancel</button>
+                    <button id="confirm-delete-btn" class="btn-delete">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>© <span id="current-year">2025</span> MediAssist. All rights reserved.</p>
+    </footer>
+
+    <script src="../JS/script.js"></script>
+    <script>
+        // Set current year in footer
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+
+        // Current medication being viewed/edited
+        let currentMedication = null;
+
+        // Toggle Medication Form Visibility
+        document.getElementById('add-med-btn').addEventListener('click', () => {
+            resetForm();
+            document.getElementById('form-title').textContent = 'Add New Medication';
+            document.getElementById('form_action').value = 'add';
+            document.getElementById('med-form-container').style.display = 'block';
+        });
+        
+        document.getElementById('cancel-med-btn').addEventListener('click', () => {
+            document.getElementById('med-form-container').style.display = 'none';
+        });
+
+        // Toggle file input based on replace image checkbox
+        const replaceCheckbox = document.getElementById('replace_image');
+        if (replaceCheckbox) {
+            replaceCheckbox.addEventListener('change', function() {
+                const fileInput = document.getElementById('med_image');
+                fileInput.disabled = !this.checked;
+                if (this.checked) {
+                    fileInput.focus();
+                }
+            });
+        }
+
+        // Modal functionality
+        const modal = document.getElementById('medication-modal');
+        const deleteModal = document.getElementById('delete-modal');
+        const closeModal = document.querySelector('.close-modal');
+        const closeDeleteModal = document.querySelector('.close-delete-modal');
+        
+        closeModal.addEventListener('click', () => {
+            modal.style.display = 'none';
+        });
+        
+        if (closeDeleteModal) {
+            closeDeleteModal.addEventListener('click', () => {
+                deleteModal.style.display = 'none';
+            });
+        }
+        
+        window.addEventListener('click', (event) => {
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+            if (event.target === deleteModal) {
+                deleteModal.style.display = 'none';
+            }
+        });
+
+        // Cancel delete button
+        document.getElementById('cancel-delete-btn').addEventListener('click', () => {
+            deleteModal.style.display = 'none';
+        });
+
+        // Function to show medication details in modal
+        function showMedicationDetails(medication) {
+            currentMedication = medication;
+            
+            document.getElementById('modal-title').textContent = medication.med_name;
+            document.getElementById('modal-name').textContent = medication.med_name;
+            document.getElementById('modal-dosage').textContent = medication.dosage;
+            document.getElementById('modal-frequency').textContent = medication.frequency;
+            document.getElementById('modal-time').textContent = formatTime(medication.time_of_day);
+            document.getElementById('modal-start-date').textContent = formatDate(medication.start_date);
+            document.getElementById('modal-end-date').textContent = medication.end_date ? formatDate(medication.end_date) : 'Not specified';
+            
+            const modalImage = document.getElementById('modal-image');
+            if (medication.med_image) {
+                modalImage.src = medication.med_image;
+                modalImage.parentElement.style.display = 'flex';
+            } else {
+                modalImage.parentElement.style.display = 'none';
+            }
+            
+            modal.style.display = 'block';
+            
+            // Set up edit button
+            document.getElementById('edit-medication-btn').onclick = () => {
+                editMedication(medication);
+                modal.style.display = 'none';
+            };
+            
+            // Set up delete button
+            document.getElementById('delete-medication-btn').onclick = () => {
+                modal.style.display = 'none';
+                deleteModal.style.display = 'block';
+            };
+            
+            // Set up confirm delete button
+            document.getElementById('confirm-delete-btn').onclick = () => {
+                deleteMedication(medication.id);
+            };
+        }
+
+        // Function to populate form for editing
+        function editMedication(medication) {
+            document.getElementById('med_id').value = medication.id;
+            document.getElementById('med_name').value = medication.med_name;
+            document.getElementById('dosage').value = medication.dosage;
+            
+            // Split frequency into number and period
+            const frequencyParts = medication.frequency.split(' ');
+            if (frequencyParts.length === 2) {
+                document.getElementById('frequency_number').value = frequencyParts[0];
+                document.getElementById('frequency_period').value = frequencyParts[1];
+            }
+            
+            document.getElementById('start_date').value = medication.start_date;
+            if (medication.end_date) {
+                document.getElementById('end_date').value = medication.end_date;
+            }
+            document.getElementById('time_of_day').value = medication.time_of_day;
+            document.getElementById('form_action').value = 'update';
+            
+            // Show current image if exists
+            if (medication.med_image) {
+                document.getElementById('current-image').src = medication.med_image;
+                document.getElementById('current-image-container').style.display = 'block';
+                
+                // Reset replace image checkbox
+                const replaceCheckbox = document.getElementById('replace_image');
+                if (replaceCheckbox) {
+                    replaceCheckbox.checked = false;
+                    
+                    // Disable file input initially when editing
+                    document.getElementById('med_image').disabled = true;
+                }
+            } else {
+                document.getElementById('current-image-container').style.display = 'none';
+                document.getElementById('med_image').disabled = false;
+            }
+            
+            document.getElementById('form-title').textContent = 'Edit Medication';
+            document.getElementById('med-form-container').style.display = 'block';
+        }
+
+        // Function to reset form
+        function resetForm() {
+            document.getElementById('medication-form').reset();
+            document.getElementById('med_id').value = '';
+            document.getElementById('current-image-container').style.display = 'none';
+            document.getElementById('med-success-msg').style.display = 'none';
+            document.getElementById('form-error').style.display = 'none';
+            document.getElementById('med_image').disabled = false;
+        }
+
+        // Function to delete medication
+        async function deleteMedication(id) {
+            try {
+                const formData = new FormData();
+                formData.append('med_id', id);
+                
+                const response = await fetch('../process/delete_medication.php', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    deleteModal.style.display = 'none';
+                    // Show success message
+                    const msgDiv = document.createElement('div');
+                    msgDiv.className = 'alert alert-success';
+                    msgDiv.textContent = 'Medication deleted successfully!';
+                    msgDiv.style.marginBottom = '20px';
+                    
+                    const container = document.querySelector('.container');
+                    const contentHeader = document.querySelector('.content-header');
+                    
+                    container.insertBefore(msgDiv, contentHeader.nextSibling);
+                    
+                    // Auto-remove message after 3 seconds
+                    setTimeout(() => {
+                        msgDiv.remove();
+                    }, 3000);
+                    
+                    loadMedications();
+                } else {
+                    alert('Failed to delete medication: ' + (data.message || 'Unknown error'));
+                }
+            } catch (error) {
+                console.error('Error deleting medication:', error);
+                alert('An error occurred while deleting the medication.');
+            }
+        }
+
+        // Helper function to format dates
+        function formatDate(dateString) {
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            return new Date(dateString).toLocaleDateString(undefined, options);
+        }
+
+        // Helper function to format time
+        function formatTime(timeString) {
+            if (!timeString) return 'Not specified';
+            
+            const [hours, minutes] = timeString.split(':');
+            const hour = parseInt(hours);
+            const ampm = hour >= 12 ? 'PM' : 'AM';
+            const hour12 = hour % 12 || 12;
+            return `${hour12}:${minutes} ${ampm}`;
+        }
+
+        // Load medications from server
+        async function loadMedications() {
+            const loadingElement = document.getElementById('loading-medications');
+            const noDataMessage = document.getElementById('no-medications-message');
+            const medicationsGrid = document.getElementById('medications-grid');
+            
+            loadingElement.style.display = 'block';
+            noDataMessage.style.display = 'none';
+            medicationsGrid.innerHTML = '';
+            
+            try {
+                const response = await fetch('../process/medications_process.php');
+                const data = await response.json();
+                
+                loadingElement.style.display = 'none';
+                
+                if (data.success && data.medications && data.medications.length > 0) {
+                    data.medications.forEach(medication => {
+                        const card = document.createElement('div');
+                        card.className = 'medication-card';
+                        
+                        // Create card HTML
+                        card.innerHTML = `
+                            <div class="medication-header">
+                                <h3>${medication.med_name}</h3>
+                                <div class="medication-dosage">${medication.dosage}</div>
+                            </div>
+                            <div class="medication-body">
+                                <div class="medication-image-container">
+                                    ${medication.med_image 
+                                        ? `<img src="${medication.med_image}" alt="Medication">`
+                                        : `<div style="color:#aaa;"><i class="fas fa-pills fa-3x"></i><div>No image</div></div>`
+                                    }
+                                </div>
+                                <div class="medication-details">
+                                    <p><strong>Frequency:</strong> ${medication.frequency}</p>
+                                    <p><strong>Time:</strong> ${formatTime(medication.time_of_day)}</p>
+                                </div>
+                            </div>
+                            <div class="medication-actions">
+                                <button class="btn-edit"><i class="fas fa-edit"></i></button>
+                                <button class="btn-delete"><i class="fas fa-trash"></i></button>
+                                <button class="btn-view">View Details</button>
+                            </div>
+                        `;
+                        
+                        // Add click event to view button
+                        card.querySelector('.btn-view').addEventListener('click', () => {
+                            showMedicationDetails(medication);
+                        });
+                        
+                        // Add click event to edit button
+                        card.querySelector('.btn-edit').addEventListener('click', () => {
+                            editMedication(medication);
+                        });
+                        
+                        // Add click event to delete button
+                        card.querySelector('.btn-delete').addEventListener('click', () => {
+                            currentMedication = medication;
+                            deleteModal.style.display = 'block';
+                            
+                            // Set up confirm delete button directly
+                            document.getElementById('confirm-delete-btn').onclick = () => {
+                                deleteMedication(medication.id);
+                            };
+                        });
+                        
+                        medicationsGrid.appendChild(card);
+                    });
+                } else {
+                    noDataMessage.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Error loading medications:', error);
+                loadingElement.style.display = 'none';
+                
+                const errorMessage = document.createElement('div');
+                errorMessage.className = 'alert alert-danger';
+                errorMessage.style.margin = '20px 0';
+                errorMessage.textContent = 'Failed to load medications. Please try again later.';
+                
+                document.querySelector('.container').insertBefore(
+                    errorMessage, 
+                    document.getElementById('medications-grid')
+                );
+            }
+        }
+
+        // Medication Form Submission
+        document.getElementById('medication-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            // Validate end date if provided
+            const endDateInput = document.getElementById('end_date');
+            const formError = document.getElementById('form-error');
+            formError.style.display = 'none';
+            
+            if (endDateInput.value) {
+                const endDate = new Date(endDateInput.value);
+                const today = new Date();
+                today.setHours(0, 0, 0, 0); // Set to beginning of day for fair comparison
+                
+                if (endDate < today && document.getElementById('form_action').value === 'add') {
+                    formError.textContent = "End date cannot be in the past. Please select today or a future date.";
+                    formError.style.display = 'block';
+                    return;
+                }
+            }
+            
+            // Combine frequency fields into one value
+            const freqNum = document.getElementById('frequency_number').value;
+            const freqPeriod = document.getElementById('frequency_period').value;
+            
+            // Create a hidden input for frequency if it doesn't exist
+            let freqInput = document.getElementById('frequency');
+            if (!freqInput) {
+                freqInput = document.createElement('input');
+                freqInput.type = 'hidden';
+                freqInput.name = 'frequency';
+                freqInput.id = 'frequency';
+                this.appendChild(freqInput);
+            }
+            freqInput.value = freqNum + ' ' + freqPeriod;
+
+            const form = this;
+            const formData = new FormData(form);
+            const msgDiv = document.getElementById('med-success-msg');
+            msgDiv.style.display = 'none';
+            
+            try {
+                // Show loading indicator
+                const loadingIndicator = document.createElement('div');
+                loadingIndicator.id = 'form-loading';
+                loadingIndicator.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+                loadingIndicator.style.textAlign = 'center';
+                loadingIndicator.style.padding = '10px';
+                loadingIndicator.style.color = '#666';
+                
+                formError.style.display = 'none';
+                form.appendChild(loadingIndicator);
+                
+                const response = await fetch('../process/medications_process.php', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                // Remove loading indicator
+                document.getElementById('form-loading').remove();
+                
+                if (!response.ok) {
+                    throw new Error(`Server responded with status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data && data.success) {
+                    msgDiv.textContent = formData.get('action') === 'update' ? 
+                        "Medication updated successfully!" : 
+                        "Medication added successfully!";
+                    msgDiv.style.display = 'block';
+                    msgDiv.className = 'alert alert-success';
+                    
+                    // Reset form and hide it after a delay
+                    setTimeout(() => {
+                        form.reset();
+                        document.getElementById('med-form-container').style.display = 'none';
+                        loadMedications(); // Reload the medications list
+                    }, 1500);
+                } else {
+                    formError.textContent = data.message || "Failed to process medication.";
+                    formError.style.display = 'block';
+                }
+            } catch (err) {
+                console.error("Error:", err);
+                formError.textContent = "An error occurred while processing medication. Please try again.";
+                formError.style.display = 'block';
+                
+                // Remove loading indicator if it exists
+                const loadingIndicator = document.getElementById('form-loading');
+                if (loadingIndicator) {
+                    loadingIndicator.remove();
+                }
+            }
+        });
+
+        // Load medications when the page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add global handler for image loading errors
+            document.addEventListener('error', function(e) {
+                if (e.target.tagName.toLowerCase() === 'img') {
+                    console.error('Image failed to load:', e.target.src);
+                    // Replace with placeholder
+                    e.target.src = '../images/placeholder-pill.png'; // Create a placeholder image
+                    e.target.alt = 'Image not available';
+                }
+            }, true);
+            
+            loadMedications();
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MediAssist - Your Personal Healthcare Companion</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="CSS/indexstyle.css">
+    <!-- Add this in the <head> section of your HTML -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+</head>
+
+<body>
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loading-content">
+            <div class="loader">
+                <div class="loader-circle"></div>
+                <div class="loader-circle"></div>
+                <div class="loader-circle"></div>
+            </div>
+            <h2 class="pulse">Loading Your Experience</h2>
+            <div class="loading-progress">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+            <div class="loading-percentage" id="loadingPercentage">0%</div>
+        </div>
+    </div>
+
+    <header class="main-header">
+        <nav class="container">
+            <div class="logo">⚕️MediAssist</div>
+            <ul class="nav-links">
+                <li><a href="#features">Features</a></li>
+                <li><a href="#how-it-works">How It Works</a></li>
+                <li><a href="#testimonials">Testimonials</a></li>
+            </ul>
+            <div class="nav-buttons">
+                <a href="HTML/login.html" class="btn btn-outline-nav">Login</a>
+                <a href="HTML/signup.html" class="btn btn-primary-nav">Sign Up</a>
+                <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
+                    <span class="sun-icon">☀️</span>
+                    <span class="moon-icon">🌙</span>
+                </button>
+            </div>
+            <button id="menu-toggle" class="menu-toggle"><i class="fas fa-bars"></i></button>
+        </nav>
+    </header>
+
+    <div id="mobile-menu" class="mobile-nav">
+        <button id="close-menu" class="close-menu">&times;</button>
+        <ul>
+            <li><a href="#features">Features</a></li>
+            <li><a href="#how-it-works">How It Works</a></li>
+            <li><a href="#testimonials">Testimonials</a></li>
+            <li><a href="HTML/login.html">Login</a></li>
+            <li><a href="HTML/signup.html">Sign Up</a></li>
+        </ul>
+    </div>
+
+
+    <main>
+        <section class="hero-section">
+            <div class="container">
+                <div class="hero-content">
+                    <!-- Medical-themed logo -->
+                    <div class="hero-logo">
+                        <div class="emoji-logo">
+                            <!-- Option 1: Heart emoji -->
+            
+                            
+                            <!-- Option 2: Alternative medical emojis (uncomment one of these instead) -->
+                            <span role="img" aria-label="medical">⚕️</span>
+                            <!-- <span role="img" aria-label="pill">💊</span> -->
+                            <!-- <span role="img" aria-label="stethoscope">🩺</span> -->
+                            <!-- <span role="img" aria-label="dna">🧬</span> -->
+                            <!-- <span role="img" aria-label="microscope">🔬</span> -->
+                            
+                            <!-- EKG line animation -->
+                            <div class="ekg-line"></div>
+                        </div>
+                        <div class="logo-text">MediAssist</div>
+                        <div class="logo-tagline">Your Health, Our Priority</div>
+                    </div>
+                    
+                    <!-- Your existing hero content -->
+                    <h1>Welcome to MediAssist</h1>
+                    <p class="hero-subtitle">Advanced healthcare at your fingertips</p>
+                    <p class="hero-description">Access medical services, track your health, and connect with healthcare professionals all in one place.</p>
+                    <div class="cta-buttons">
+                        <a href="#" class="btn btn-primary">Get Started</a>
+                        <a href="#" class="btn btn-outline">Learn More</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="features" class="features-section container reveal">
+            <h2>Your Health, Organized</h2>
+            <p class="section-subtitle">Everything you need to manage your healthcare effectively.</p>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <i class="fas fa-pills feature-icon"></i>
+                    <h3>Medication Management</h3>
+                    <p>Set reminders, track dosages, and manage prescriptions easily. Never miss a dose again.</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-file-medical feature-icon"></i>
+                    <h3>Centralized Health Records</h3>
+                    <p>Securely store and access your medical history, test results, and important documents anytime.
+                    </p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-calendar-check feature-icon"></i>
+                    <h3>Effortless Appointments</h3>
+                    <p>Schedule, manage, and receive reminders for doctor visits and consultations.</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-notes-medical feature-icon"></i>
+                    <h3>Symptom Tracking</h3>
+                    <p>Log symptoms and monitor your health trends to share valuable information with your doctor.</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-shield-alt feature-icon"></i>
+                    <h3>Secure & Private</h3>
+                    <p>Your health data is protected with top-tier security measures and remains confidential.</p>
+                </div>
+                <div class="feature-card">
+                    <i class="fas fa-mobile-alt feature-icon"></i>
+                    <h3>Accessible Anywhere</h3>
+                    <p>Access your MediAssist account on any device, keeping your health info at your fingertips.</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="how-it-works" class="how-it-works-section reveal">
+            <div class="container">
+                <h2>Simple Steps to Better Health Management</h2>
+                <div class="steps-grid">
+                    <div class="step-card">
+                        <div class="step-number">1</div>
+                        <i class="fas fa-user-plus step-icon"></i>
+                        <h3>Sign Up</h3>
+                        <p>Create your secure MediAssist account in minutes.</p>
+                    </div>
+                    <div class="step-card">
+                        <div class="step-number">2</div>
+                        <i class="fas fa-notes-medical step-icon"></i>
+                        <h3>Add Your Info</h3>
+                        <p>Enter your medications, medical history, and upcoming appointments.</p>
+                    </div>
+                    <div class="step-card">
+                        <div class="step-number">3</div>
+                        <i class="fas fa-bell step-icon"></i>
+                        <h3>Stay Organized</h3>
+                        <p>Receive reminders and manage your health tasks effortlessly.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="testimonials-section">
+            <div class="container">
+                <h2>Patient Testimonials</h2>
+                <p class="section-subtitle">Hear from people who improved their health with our app</p>
+                
+                <div class="testimonial-slider">
+                    <div class="testimonial-slide active">
+                        <div class="testimonial-content">
+                            This app has completely transformed how I manage my diabetes. The medication reminders and blood sugar tracking features have helped me maintain stable levels for the first time in years. My doctor is impressed with my progress!
+                        </div>
+                        <div class="testimonial-author">
+                            <img src="images/profile1.jpg" alt="Sarah Johnson" class="author-image">
+                            <div class="author-info">
+                                <div class="author-name">Sarah Johnson</div>
+                                <div class="author-title">Patient, Type 2 Diabetes</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="testimonial-slide">
+                        <div class="testimonial-content">
+                            As a cardiologist, I recommend this app to all my patients. The heart rate monitoring and medication adherence tools have significantly improved patient outcomes. The interface is intuitive enough for even my elderly patients to use with ease.
+                        </div>
+                        <div class="testimonial-author">
+                            <img src="images/profile2.jpg" alt="Dr. David Chen" class="author-image">
+                            <div class="author-info">
+                                <div class="author-name">Dr. David Chen</div>
+                                <div class="author-title">Cardiologist, Memorial Hospital</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="testimonial-slide">
+                        <div class="testimonial-content">
+                            After my surgery, this app was essential for my recovery. The post-operative care instructions and direct messaging with my healthcare team made me feel supported at home. The symptom tracker helped identify a potential complication early.
+                        </div>
+                        <div class="testimonial-author">
+                            <img src="images/profile3.jpg" alt="Maria Rodriguez" class="author-image">
+                            <div class="author-info">
+                                <div class="author-name">Maria Rodriguez</div>
+                                <div class="author-title">Post-Surgery Recovery Patient</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="testimonial-slide">
+                        <div class="testimonial-content">
+                            Managing my family's health appointments and medications used to be overwhelming. This app consolidates everything in one place - from my son's asthma treatments to my husband's heart medication schedule. It's been a lifesaver for our family.
+                        </div>
+                        <div class="testimonial-author">
+                            <img src="images/profile4.jpg" alt="Jennifer Taylor" class="author-image">
+                            <div class="author-info">
+                                <div class="author-name">Jennifer Taylor</div>
+                                <div class="author-title">Family Health Coordinator</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="slider-dots">
+                        <span class="dot active" onclick="currentSlide(1)"></span>
+                        <span class="dot" onclick="currentSlide(2)"></span>
+                        <span class="dot" onclick="currentSlide(3)"></span>
+                        <span class="dot" onclick="currentSlide(4)"></span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="cta-section reveal">
+            <div class="container">
+                <h2>Ready to Take Control of Your Health?</h2>
+                <p>Join thousands of users simplifying their healthcare management with MediAssist.</p>
+                <a href="HTML/signup.html" class="btn btn-primary btn-large">Sign Up for Free Now</a>
+            </div>
+        </section>
+    </main>
+
+    <footer class="main-footer">
+        <div class="container">
+            <p>&copy; <span id="current-year"></span> MediAssist. All rights reserved.</p>
+            <ul class="footer-links">
+                <li><a href="#">Privacy Policy</a></li>
+                <li><a href="#">Terms of Service</a></li>
+            </ul>
+        </div>
+    </footer>
+
+    <style>
+        :root {
+            --bg-primary: #f8f9fa;
+            --text-primary: #333;
+        }
+        
+        [data-theme="dark"] {
+            --bg-primary: #121212;
+            --text-primary: #f0f0f0;
+        }
+        
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        
+        .theme-toggle {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 10px;
+        }
+    </style>
+    <script>
+        // This will run when the page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            const themeToggle = document.getElementById('themeToggle');
+            
+            themeToggle.addEventListener('click', function() {
+                const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+                const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+                
+                document.documentElement.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+                
+                console.log('Theme switched to:', newTheme); // Check console to confirm click is registered
+            });
+            
+            // Set initial theme from localStorage
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme) {
+                document.documentElement.setAttribute('data-theme', savedTheme);
+            }
+        });
+    </script>
+    <script src="JS/script.js"></script>
+    <script src="js/testimonials.js"></script>
+    <script src="js/loading.js"></script>
+    <script src="js/theme.js"></script>
+</body>
+
+</html>

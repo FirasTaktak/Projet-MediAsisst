@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appointments - MediAssist</title>
+    <link rel="stylesheet" href="../CSS/dark-mode.css">
+    <link rel="stylesheet" href="../CSS/prescriptions.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="../JS/dark-mode.js" defer></script>
+    <script src="../JS/theme.js"></script>
+    <script src="../JS/add-dark-mode-toggle.js" defer></script>
+    <!-- Add this style block in the head section of appointments.html -->
+<style>
+    /* Center content in appointment cards */
+    .appointment-card .appointment-header {
+        text-align: center;
+    }
+    
+    .appointment-card .appointment-details {
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .appointment-card .appointment-details p {
+        margin: 5px 0;
+    }
+    
+    .appointment-card .appointment-actions {
+        display: flex;
+        justify-content: center;
+        margin-top: 15px;
+    }
+</style>
+
+</head>
+
+<body id="appointments-page-identifier">
+    <header>
+        <a href="dashboard.html" class="logo">MediAssist</a>
+        <nav>
+            <span id="user-greeting">Welcome!</span>
+            <img id="profile-picture" alt="Profile Picture"
+                style="width:38px;height:38px;border-radius:50%;object-fit:cover;margin-left:10px;vertical-align:middle;display:none;">
+            <a href="profile.html"><i class="fas fa-user"></i> Profile</a>
+            <a href="../process/logout_process.php"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            <!-- Add dark mode toggle button -->
+            <button id="dark-mode-toggle" aria-label="Toggle dark mode">
+                <i class="fas fa-sun"></i>
+            </button>
+        </nav>
+        <!-- Example notification bell icon -->
+        <div id="notifications-icon" style="position: relative; margin-left: 24px; cursor: pointer;">
+            <i class="fas fa-bell" style="font-size: 2.2rem; color: #ff9800;"></i>
+            <span id="notifications-dot"
+                style="display: none; background: #e53935; border-radius: 50%; width: 14px; height: 14px; position: absolute; top: 0; right: 0; border: 2px solid #fff;"></span>
+        </div>
+    </header>
+
+    
+
+    <div class="container">
+        <div class="content-header">
+            <h1>My Appointments</h1>
+            <button id="add-appt-btn" class="btn-primary"><i class="fas fa-plus"></i> Add Appointment</button>
+        </div>
+
+        <div id="appt-form-container" class="form-container" style="display: none;">
+            <div id="appt-success-msg" class="alert alert-success" style="display:none;"></div>
+            <h2 id="appt-form-title">Add New Appointment</h2>
+            <form id="appointment-form" action="../process/appointment_process.php" method="post">
+                <input type="hidden" id="appt_id" name="appt_id">
+                <input type="hidden" name="action" id="form_action" value="add">
+                <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
+
+                <div class="form-group">
+                    <label for="appointment_type">Appointment Type</label>
+                    <select id="appointment_type" name="appointment_type" required>
+                        <option value="Consultation">Consultation</option>
+                        <option value="Analysis">Analysis</option>
+                        <option value="Follow-up">Follow-up</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="doctor_name">Doctor/Healthcare Provider</label>
+                    <input type="text" id="doctor_name" name="doctor_name" required>
+                </div>
+                <div class="form-group">
+                    <label for="appointment_date">Date</label>
+                    <input type="date" id="appointment_date" name="appointment_date" required>
+                </div>
+                <div class="form-group">
+                    <label for="appointment_time">Time</label>
+                    <input type="time" id="appointment_time" name="appointment_time" required>
+                </div>
+                <div class="form-group">
+                    <label for="location">Location</label>
+                    <input type="text" id="location" name="location">
+                </div>
+                <div class="form-group">
+                    <label for="reminder_time">Set Reminder (minutes before)</label>
+                    <input type="number" id="reminder_time" name="reminder_time" min="0" value="30">
+                </div>
+                <div class="form-group">
+                    <label for="notes">Notes</label>
+                    <textarea id="notes" name="notes" rows="3"></textarea>
+                </div>
+                <div id="appt-form-error" class="alert alert-danger" style="display: none;"></div>
+                <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+                    <button type="button" id="cancel-appt-btn" class="btn" style="background-color: #aaa;">Cancel</button>
+                    <button type="submit" class="btn">Save Appointment</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Loading indicator -->
+        <div id="loading-appointments" class="loading-spinner">
+            <i class="fas fa-spinner fa-spin fa-2x"></i>
+            <p>Loading appointments...</p>
+        </div>
+
+        <!-- No appointments message -->
+        <div id="no-appointments-message" class="no-data-message" style="display:none;">
+            <i class="fas fa-calendar-alt fa-3x" style="margin-bottom: 15px;"></i>
+            <h3>No Appointments Found</h3>
+            <p>You haven't added any appointments yet. Click the "Add Appointment" button to get started.</p>
+        </div>
+
+        <!-- Appointments grid -->
+        <div id="appointments-grid" class="appointments-grid">
+            <!-- Appointment cards will be dynamically inserted here -->
+        </div>
+
+        <!-- Appointment Detail Modal -->
+        <div id="appointment-modal" class="modal">
+            <div class="modal-content">
+                <span class="close-modal">&times;</span>
+                <h2 id="modal-title">Appointment Details</h2>
+                <div class="modal-appointment-details">
+                    <div class="modal-appointment-info">
+                        <p><strong>Type:</strong> <span id="modal-type"></span></p>
+                        <p><strong>Doctor:</strong> <span id="modal-doctor"></span></p>
+                        <p><strong>Date:</strong> <span id="modal-date"></span></p>
+                        <p><strong>Time:</strong> <span id="modal-time"></span></p>
+                        <p><strong>Location:</strong> <span id="modal-location"></span></p>
+                        <p><strong>Reminder:</strong> <span id="modal-reminder"></span></p>
+                        <p><strong>Notes:</strong> <span id="modal-notes"></span></p>
+                    </div>
+                    <div class="modal-actions">
+                        <button id="edit-appointment-btn" class="btn-edit"><i class="fas fa-edit"></i> Edit</button>
+                        <button id="delete-appointment-btn" class="btn-delete"><i class="fas fa-trash"></i> Delete</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Delete Confirmation Modal -->
+        <div id="delete-modal" class="modal">
+            <div class="modal-content" style="max-width: 500px;">
+                <span class="close-delete-modal">&times;</span>
+                <h2>Confirm Deletion</h2>
+                <p>Are you sure you want to delete this appointment? This action cannot be undone.</p>
+                <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+                    <button id="cancel-delete-btn" class="btn" style="background-color: #aaa;">Cancel</button>
+                    <button id="confirm-delete-btn" class="btn-delete">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>© <span id="current-year">2025</span> MediAssist. All rights reserved.</p>
+    </footer>
+
+    <script src="../JS/script.js"></script>
+    <!-- Page-specific script -->
+    <script>
+        // Set current year in footer
+        document.getElementById('current-year').textContent = new Date().getFullYear();
+
+        // Toggle Appointment Form Visibility
+        document.getElementById('add-appt-btn').addEventListener('click', () => {
+            resetForm();
+            document.getElementById('appt-form-title').textContent = 'Add New Appointment';
+            document.getElementById('form_action').value = 'add';
+            document.getElementById('appt-form-container').style.display = 'block';
+        });
+        
+        document.getElementById('cancel-appt-btn').addEventListener('click', () => {
+            document.getElementById('appt-form-container').style.display = 'none';
+        });
+
+        // Modal functionality
+        const modal = document.getElementById('appointment-modal');
+        const deleteModal = document.getElementById('delete-modal');
+        const closeModal = document.querySelector('.close-modal');
+        const closeDeleteModal = document.querySelector('.close-delete-modal');
+        
+        closeModal.addEventListener('click', () => {
+            modal.style.display = 'none';
+        });
+        
+        if (closeDeleteModal) {
+            closeDeleteModal.addEventListener('click', () => {
+                deleteModal.style.display = 'none';
+            });
+        }
+        
+        window.addEventListener('click', (event) => {
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+            if (event.target === deleteModal) {
+                deleteModal.style.display = 'none';
+            }
+        });
+
+        // Cancel delete button
+        document.getElementById('cancel-delete-btn').addEventListener('click', () => {
+            deleteModal.style.display = 'none';
+        });
+
+        // Function to reset form
+        function resetForm() {
+            document.getElementById('appointment-form').reset();
+            document.getElementById('appt_id').value = '';
+            document.getElementById('appt-success-msg').style.display = 'none';
+            document.getElementById('appt-form-error').style.display = 'none';
+        }
+
+        // Helper function to format dates
+        function formatDate(dateString) {
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            return new Date(dateString).toLocaleDateString(undefined, options);
+        }
+
+        // Helper function to format time
+        function formatTime(timeString) {
+            if (!timeString) return 'Not specified';
+            
+            const [hours, minutes] = timeString.split(':');
+            const hour = parseInt(hours);
+            const ampm = hour >= 12 ? 'PM' : 'AM';
+            const hour12 = hour % 12 || 12;
+            return `${hour12}:${minutes} ${ampm}`;
+        }
+
+        // Appointment Form Submission
+        document.getElementById('appointment-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const form = this;
+            const formData = new FormData(form);
+            
+            const msgDiv = document.getElementById('appt-success-msg');
+            const errorDiv = document.getElementById('appt-form-error');
+            
+            // Reset message displays
+            msgDiv.style.display = 'none';
+            errorDiv.style.display = 'none';
+            
+            // Client-side validation for past dates
+            const appointmentDate = new Date(formData.get('appointment_date') + 'T' + formData.get('appointment_time'));
+            const now = new Date();
+            
+            if (appointmentDate < now && formData.get('action') === 'add') {
+                errorDiv.textContent = "Cannot schedule appointments in the past. Please select a future date and time.";
+                errorDiv.style.display = 'block';
+                return;
+            }
+
+            try {
+                // First, fetch a fresh CSRF token
+                const tokenResponse = await fetch('../process/get_csrf_token.php');
+                const tokenData = await tokenResponse.json();
+            
+                if (tokenData.csrf_token) {
+                    // Update the form data with the fresh token
+                    formData.set('csrf_token', tokenData.csrf_token);
+                }
+            
+                // Show loading indicator
+                const loadingIndicator = document.createElement('div');
+                loadingIndicator.id = 'form-loading';
+                loadingIndicator.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+                loadingIndicator.style.textAlign = 'center';
+                loadingIndicator.style.padding = '10px';
+                loadingIndicator.style.color = '#666';
+            
+                form.appendChild(loadingIndicator);
+            
+                const response = await fetch('../process/appointment_process.php', {
+                    method: 'POST',
+                    body: formData
+                });
+            
+                // Remove loading indicator
+                document.getElementById('form-loading').remove();
+            
+                const data = await response.json();
+            
+                if (data && data.success) {
+                    msgDiv.textContent = formData.get('action') === 'update' ? 
+                        "Appointment updated successfully!" : 
+                        "Appointment added successfully!";
+                    msgDiv.style.display = 'block';
+                    msgDiv.className = 'alert alert-success';
+                
+                    // Reset form and hide it after a delay
+                    setTimeout(() => {
+                        form.reset();
+                        document.getElementById('appt-form-container').style.display = 'none';
+                        loadAppointments(); // Reload the appointments list
+                    }, 1500);
+                } else {
+                    errorDiv.textContent = data.message || "Failed to process appointment.";
+                    errorDiv.style.display = 'block';
+                }
+            } catch (err) {
+                console.error("Error:", err);
+                errorDiv.textContent = "An error occurred while processing your request.";
+                errorDiv.style.display = 'block';
+            
+                // Remove loading indicator if it exists
+                const loadingIndicator = document.getElementById('form-loading');
+                if (loadingIndicator) {
+                    loadingIndicator.remove();
+                }
+            }
+        });
+
+        // Load appointments function
+        async function loadAppointments() {
+            const loadingElement = document.getElementById('loading-appointments');
+            const noDataMessage = document.getElementById('no-appointments-message');
+            const appointmentsGrid = document.getElementById('appointments-grid');
+            
+            loadingElement.style.display = 'block';
+            noDataMessage.style.display = 'none';
+            appointmentsGrid.innerHTML = '';
+            
+            try {
+                // Fetch appointments from server
+                const response = await fetch('../process/get_appointments.php');
+                const data = await response.json();
+                
+                loadingElement.style.display = 'none';
+                
+                if (!data.success) {
+                    throw new Error(data.message || 'Failed to load appointments');
+                }
+                
+                if (data.appointments && data.appointments.length > 0) {
+                    // Hide no data message
+                    noDataMessage.style.display = 'none';
+                    
+                    // Create appointment cards
+                    data.appointments.forEach(appointment => {
+                        const card = document.createElement('div');
+                        card.className = 'appointment-card';
+                        card.dataset.id = appointment.id;
+                        
+                        // Determine if appointment is upcoming, past, or today
+                        const appointmentDate = new Date(appointment.appointment_date);
+                        const today = new Date();
+                        today.setHours(0, 0, 0, 0);
+                        
+                        let statusClass = '';
+                        if (appointmentDate < today) {
+                            statusClass = 'past-appointment';
+                        } else if (appointmentDate.getTime() === today.getTime()) {
+                            statusClass = 'today-appointment';
+                        } else {
+                            statusClass = 'upcoming-appointment';
+                        }
+                        
+                        card.classList.add(statusClass);
+                        
+                        // Format the card content
+                        card.innerHTML = `
+                            <div class="appointment-header">
+                                <h3>${appointment.appointment_type}</h3>
+                                <span class="appointment-date">${formatDate(appointment.appointment_date)}</span>
+                            </div>
+                            <div class="appointment-details">
+                                <p><i class="fas fa-user-md"></i> ${appointment.doctor_name}</p>
+                                <p><i class="fas fa-clock"></i> ${formatTime(appointment.appointment_time)}</p>
+                                ${appointment.location ? `<p><i class="fas fa-map-marker-alt"></i> ${appointment.location}</p>` : ''}
+                            </div>
+                            <div class="appointment-actions">
+                                <button class="btn-edit"><i class="fas fa-edit"></i></button>
+                                <button class="btn-delete"><i class="fas fa-trash"></i></button>
+                                <button class="btn-view">View Details</button>
+                            </div>
+                        `;
+                        
+                        // Add click event to view button
+                        card.querySelector('.btn-view').addEventListener('click', () => {
+                            viewAppointment(appointment.id);
+                        });
+                        
+                        // Add click event to edit button
+                        card.querySelector('.btn-edit').addEventListener('click', () => {
+                            editAppointment(appointment);
+                        });
+                        
+                        // Add click event to delete button
+                        card.querySelector('.btn-delete').addEventListener('click', () => {
+                            // Show delete confirmation modal
+                            document.getElementById('delete-modal').style.display = 'block';
+                            // Set up delete confirmation button
+                            document.getElementById('confirm-delete-btn').onclick = () => deleteAppointment(appointment.id);
+                        });
+                        
+                        appointmentsGrid.appendChild(card);
+                    });
+                } else {
+                    // Show no data message
+                    noDataMessage.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Error loading appointments:', error);
+                loadingElement.style.display = 'none';
+                
+                const errorMessage = document.createElement('div');
+                errorMessage.className = 'alert alert-danger';
+                errorMessage.style.margin = '20px 0';
+                errorMessage.textContent = 'Failed to load appointments. Please try again later.';
+                
+                document.querySelector('.container').insertBefore(
+                    errorMessage, 
+                    document.getElementById('appointments-grid')
+                );
+            }
+        }
+
+        // Function to view appointment details
+        function viewAppointment(id) {
+            // Fetch the specific appointment data
+            fetch(`../process/get_appointments.php?id=${id}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.appointments && data.appointments.length > 0) {
+                        const appointment = data.appointments[0];
+                        
+                        // Populate modal with appointment details
+                        document.getElementById('modal-title').textContent = `${appointment.appointment_type} with Dr. ${appointment.doctor_name}`;
+                        document.getElementById('modal-type').textContent = appointment.appointment_type;
+                        document.getElementById('modal-doctor').textContent = appointment.doctor_name;
+                        document.getElementById('modal-date').textContent = formatDate(appointment.appointment_date);
+                        document.getElementById('modal-time').textContent = formatTime(appointment.appointment_time);
+                        document.getElementById('modal-location').textContent = appointment.location || 'Not specified';
+                        document.getElementById('modal-reminder').textContent = appointment.reminder_time ? 
+                            `${appointment.reminder_time} minutes before` : 'None';
+                        document.getElementById('modal-notes').textContent = appointment.notes || 'No notes';
+                        
+                        // Set up edit and delete buttons
+                        const editBtn = document.getElementById('edit-appointment-btn');
+                        const deleteBtn = document.getElementById('delete-appointment-btn');
+                        
+                        editBtn.onclick = () => editAppointment(appointment);
+                        deleteBtn.onclick = () => {
+                            // Close the details modal
+                            document.getElementById('appointment-modal').style.display = 'none';
+                            // Show delete confirmation modal
+                            document.getElementById('delete-modal').style.display = 'block';
+                            // Set up delete confirmation button
+                            document.getElementById('confirm-delete-btn').onclick = () => deleteAppointment(appointment.id);
+                        };
+                        
+                        // Show the modal
+                        document.getElementById('appointment-modal').style.display = 'block';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching appointment details:', error);
+                });
+        }
+
+        // Function to edit appointment
+        function editAppointment(appointment) {
+            // Close the modal if it's open
+            document.getElementById('appointment-modal').style.display = 'none';
+            
+            // Set form title
+            document.getElementById('appt-form-title').textContent = 'Edit Appointment';
+            
+            // Populate form fields
+            document.getElementById('appt_id').value = appointment.id;
+            document.getElementById('form_action').value = 'update';
+            document.getElementById('appointment_type').value = appointment.appointment_type;
+            document.getElementById('doctor_name').value = appointment.doctor_name;
+            document.getElementById('appointment_date').value = appointment.appointment_date;
+            document.getElementById('appointment_time').value = appointment.appointment_time;
+            document.getElementById('location').value = appointment.location || '';
+            document.getElementById('reminder_time').value = appointment.reminder_time || 30;
+            document.getElementById('notes').value = appointment.notes || '';
+            
+            // Show the form
+            document.getElementById('appt-form-container').style.display = 'block';
+        }
+
+        // Function to delete appointment
+        async function deleteAppointment(id) {
+            try {
+                const formData = new FormData();
+                formData.append('action', 'delete');
+                formData.append('appt_id', id);
+                
+                const response = await fetch('../process/appointment_process.php', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Close the delete modal
+                    document.getElementById('delete-modal').style.display = 'none';
+                    
+                    // Show success message
+                    const msgDiv = document.createElement('div');
+                    msgDiv.className = 'alert alert-success';
+                    msgDiv.textContent = 'Appointment deleted successfully!';
+                    document.querySelector('.container').insertBefore(msgDiv, document.querySelector('.content-header').nextSibling);
+                    
+                    // Remove message after 3 seconds
+                    setTimeout(() => {
+                        msgDiv.remove();
+                    }, 3000);
+                    
+                    // Reload appointments
+                    loadAppointments();
+                } else {
+                    throw new Error(data.message || 'Failed to delete appointment');
+                }
+            } catch (error) {
+                console.error('Error deleting appointment:', error);
+                alert('Error deleting appointment: ' + error.message);
+            }
+        }
+
+        // Load appointments when the page loads
+        document.addEventListener('DOMContentLoaded', loadAppointments);
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,174 @@
+/* Base Light Mode Styles (Default) */
+:root {
+  --primary-color: #4a6da7;
+  --secondary-color: #5d7ebb;
+  --text-color: #333333;
+  --background-color: #ffffff;
+  --card-bg-color: #f8f9fa;
+  --border-color: #dee2e6;
+  --input-bg: #ffffff;
+  --input-text: #495057;
+  --shadow-color: rgba(0, 0, 0, 0.1);
+  --hover-color: #e9ecef;
+  --success-color: #28a745;
+  --danger-color: #dc3545;
+  --warning-color: #ffc107;
+  --info-color: #17a2b8;
+}
+
+/* Dark Mode Variables */
+.dark-mode {
+  --primary-color: #6c8fc7;
+  --secondary-color: #7da0e0;
+  --text-color: #e1e1e1;
+  --background-color: #121212;
+  --card-bg-color: #1e1e1e;
+  --border-color: #2d2d2d;
+  --input-bg: #2c2c2c;
+  --input-text: #e1e1e1;
+  --shadow-color: rgba(0, 0, 0, 0.3);
+  --hover-color: #2a2a2a;
+  --success-color: #48c774;
+  --danger-color: #f14668;
+  --warning-color: #ffdd57;
+  --info-color: #3e8ed0;
+}
+
+/* Apply Variables to Elements */
+body {
+  background-color: var(--background-color);
+  color: var(--text-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Cards and Containers */
+.card, .container, .modal-content, .dropdown-menu {
+  background-color: var(--card-bg-color);
+  border-color: var(--border-color);
+  color: var(--text-color);
+}
+
+/* Form Elements */
+input, select, textarea, .form-control {
+  background-color: var(--input-bg);
+  color: var(--input-text);
+  border-color: var(--border-color);
+}
+
+input::placeholder, textarea::placeholder {
+  color: var(--input-text);
+  opacity: 0.7;
+}
+
+/* Tables */
+table, th, td {
+  border-color: var(--border-color);
+  color: var(--text-color);
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+  background-color: var(--hover-color);
+}
+
+/* Navigation */
+.navbar, .sidebar {
+  background-color: var(--card-bg-color);
+  border-color: var(--border-color);
+}
+
+.nav-link, .navbar-brand {
+  color: var(--text-color);
+}
+
+.nav-link:hover, .navbar-brand:hover {
+  color: var(--primary-color);
+}
+
+/* Buttons */
+.btn-primary {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.btn-secondary {
+  background-color: var(--secondary-color);
+  border-color: var(--secondary-color);
+}
+
+.btn-outline-primary {
+  color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.btn-outline-primary:hover {
+  background-color: var(--primary-color);
+  color: var(--background-color);
+}
+
+/* Links */
+a {
+  color: var(--primary-color);
+}
+
+a:hover {
+  color: var(--secondary-color);
+}
+
+/* Alerts and Notifications */
+.alert-success {
+  background-color: var(--success-color);
+  color: var(--background-color);
+}
+
+.alert-danger {
+  background-color: var(--danger-color);
+  color: var(--background-color);
+}
+
+.alert-warning {
+  background-color: var(--warning-color);
+  color: var(--text-color);
+}
+
+.alert-info {
+  background-color: var(--info-color);
+  color: var(--background-color);
+}
+
+/* Dark Mode Toggle Button */
+#dark-mode-toggle {
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 50%;
+  background-color: transparent;
+  border: none;
+  color: var(--text-color);
+  transition: all 0.3s ease;
+}
+
+#dark-mode-toggle:hover {
+  background-color: var(--hover-color);
+}
+
+/* Shadows */
+.shadow, .card, .dropdown-menu {
+  box-shadow: 0 0.5rem 1rem var(--shadow-color) !important;
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background-color);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-color);
+}
